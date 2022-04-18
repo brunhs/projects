@@ -1,4 +1,8 @@
+text-extraction-app/text-extraction-app/app/__pycache__/
+text-extraction-app/app/__pycache__/
+app/__pycache__/
 __pycache__/
 env/
 venv/
 *.zip
+*.png
