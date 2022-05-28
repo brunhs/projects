@@ -2,90 +2,12 @@ from os import read
 from flask import Flask, request, render_template
 
 import pandas as pd
-import numpy as np
-import neattext.functions as nfx
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from dashboard import getvaluecounts, getlevelcount, getsubjectsperlevel, yearwiseprofit
-
+from model.data_preparation.data_preparation import readData, titleManipulation, cosineSimMat, searchTerm
+from model.utils.utils import extractFeatures, cosineMatrix
+from model.model import recommend_course
 
 app = Flask(__name__)
-
-
-def getcosinemat(df):
-
-    countvect = CountVectorizer()
-    cvmat = countvect.fit_transform(df['Clean_title'])
-    return cvmat
-
-# getting the title which doesn't contain stopwords and all which we removed with the help of nfx
-
-
-def getcleantitle(df):
-
-    df['Clean_title'] = df['course_title'].apply(nfx.remove_stopwords)
-
-    df['Clean_title'] = df['Clean_title'].apply(nfx.remove_special_characters)
-
-    return df
-
-
-def cosinesimmat(cv_mat):
-
-    return cosine_similarity(cv_mat)
-
-
-def readdata():
-
-    df = pd.read_csv('UdemyCleanedTitle.csv')
-    return df
-
-# this is the main recommendation logic for a particular title which is choosen
-
-
-def recommend_course(df, title, cosine_mat, numrec):
-
-    course_index = pd.Series(
-        df.index, index=df['course_title']).drop_duplicates()
-
-    index = course_index[title]
-
-    scores = list(enumerate(cosine_mat[index]))
-
-    sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
-
-    selected_course_index = [i[0] for i in sorted_scores[1:]]
-
-    selected_course_score = [i[1] for i in sorted_scores[1:]]
-
-    rec_df = df.iloc[selected_course_index]
-
-    rec_df['Similarity_Score'] = selected_course_score
-
-    final_recommended_courses = rec_df[[
-        'course_title', 'Similarity_Score', 'url', 'price', 'num_subscribers']]
-
-    return final_recommended_courses.head(numrec)
-
-# this will be called when a part of the title is used,not the complete title!
-
-
-def searchterm(term, df):
-    result_df = df[df['course_title'].str.contains(term)]
-    top6 = result_df.sort_values(by='num_subscribers', ascending=False).head(6)
-    return top6
-
-
-# extract features from the recommended dataframe
-
-def extractfeatures(recdf):
-
-    course_url = list(recdf['url'])
-    course_title = list(recdf['course_title'])
-    course_price = list(recdf['price'])
-
-    return course_url, course_title, course_price
-
 
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
@@ -96,17 +18,17 @@ def hello_world():
         titlename = my_dict['course']
         print(titlename)
         try:
-            df = readdata()
-            df = getcleantitle(df)
-            cvmat = getcosinemat(df)
+            df = readData('UdemyCleanedTitle.csv')
+            df = titleManipulation(df)
+            cvmat = cosineSimMat(df)
 
             num_rec = 6
-            cosine_mat = cosinesimmat(cvmat)
+            cosine_mat = cosineSimMat(cvmat)
 
             recdf = recommend_course(df, titlename,
                                      cosine_mat, num_rec)
 
-            course_url, course_title, course_price = extractfeatures(recdf)
+            course_url, course_title, course_price = extractFeatures(recdf)
 
             # print(len(extractimages(course_url[1])))
 
@@ -120,10 +42,10 @@ def hello_world():
 
         except:
 
-            resultdf = searchterm(titlename, df)
-            if resultdf.shape[0] > 6:
+            resultdf = searchTerm(titlename, df, 10)
+            if resultdf.shape[0] > 10:
                 resultdf = resultdf.head(6)
-                course_url, course_title, course_price = extractfeatures(
+                course_url, course_title, course_price = extractFeatures(
                     resultdf)
                 coursemap = dict(zip(course_title, course_url))
                 if len(coursemap) != 0:
@@ -133,7 +55,7 @@ def hello_world():
                     return render_template('index.html', showerror=True, coursename=titlename)
 
             else:
-                course_url, course_title, course_price = extractfeatures(
+                course_url, course_title, course_price = extractFeatures(
                     resultdf)
                 coursemap = dict(zip(course_title, course_url))
                 if len(coursemap) != 0:
