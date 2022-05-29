@@ -1,11 +1,8 @@
-from os import read
 from flask import Flask, request, render_template
-
-import pandas as pd
 from dashboard import getvaluecounts, getlevelcount, getsubjectsperlevel, yearwiseprofit
 from model.data_preparation.data_preparation import readData, titleManipulation, cosineSimMat, searchTerm
-from model.utils.utils import extractFeatures, cosineMatrix
-from model.model import recommend_course
+from model.utils.utils import extractFeatures
+from model.model import recommendCourse
 
 app = Flask(__name__)
 
@@ -22,15 +19,12 @@ def hello_world():
             df = titleManipulation(df)
             cvmat = cosineSimMat(df)
 
-            num_rec = 6
             cosine_mat = cosineSimMat(cvmat)
 
-            recdf = recommend_course(df, titlename,
-                                     cosine_mat, num_rec)
+            recdf = recommendCourse().recommendCourse(df, titlename,
+                                     cosine_mat, 6)
 
             course_url, course_title, course_price = extractFeatures(recdf)
-
-            # print(len(extractimages(course_url[1])))
 
             dictmap = dict(zip(course_title, course_url))
 
@@ -42,8 +36,8 @@ def hello_world():
 
         except:
 
-            resultdf = searchTerm(titlename, df, 10)
-            if resultdf.shape[0] > 10:
+            resultdf = searchTerm(titlename, df, 6)
+            if resultdf.shape[0] > 6:
                 resultdf = resultdf.head(6)
                 course_url, course_title, course_price = extractFeatures(
                     resultdf)
@@ -70,7 +64,7 @@ def hello_world():
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
 
-    df = readdata()
+    df = readData('UdemyCleanedTitle.csv')
     valuecounts = getvaluecounts(df)
 
     levelcounts = getlevelcount(df)
