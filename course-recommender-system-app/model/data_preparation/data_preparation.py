@@ -1,7 +1,5 @@
 import pandas as pd
 import neattext.functions as nfx
-from sklearn.metrics.pairwise import cosine_similarity
-
 
 def readData(file: str, extension='.csv'):
     """_summary_
@@ -18,7 +16,7 @@ def readData(file: str, extension='.csv'):
 
     return read_func(file)
 
-def titleManipulation(dataframe, column:str):
+def titleManipulation(dataframe, column:str, new_column:str):
     """_summary_
 
     Args:
@@ -28,26 +26,12 @@ def titleManipulation(dataframe, column:str):
     Returns:
         Dataframe: Column modified dataframe
     """
-    dataframe[column] = dataframe[column].apply(nfx.remove_stopwords)
-    dataframe[column] = dataframe[column].apply(nfx.remove_special_characters)
-    dataframe[column] = dataframe[column].apply(nfx.remove_puncts)
-    dataframe[column] = dataframe[column].apply(nfx.remove_emojis)
+    dataframe[new_column] = dataframe[column].apply(nfx.remove_stopwords)
+    dataframe[new_column] = dataframe[column].apply(nfx.remove_special_characters)
+    dataframe[new_column] = dataframe[column].apply(nfx.remove_puncts)
+    dataframe[new_column] = dataframe[column].apply(nfx.remove_emojis)
 
     return dataframe
-
-
-def cosineSimMat(dataframe):
-    """_summary_
-
-    Args:
-        dataframe (Pandas): Pandas dataframe
-
-    Returns:
-        cosine similarity matrix: Returns cosine similarity matrix
-    """
-
-    return cosine_similarity(dataframe)
-
 
 def searchTerm(term:str, dataframe, amount:int):
     """_summary_
