@@ -26,14 +26,15 @@ def titleManipulation(dataframe, column:str, new_column:str):
     Returns:
         Dataframe: Column modified dataframe
     """
-    dataframe[new_column] = dataframe[column].apply(nfx.remove_stopwords)
-    dataframe[new_column] = dataframe[column].apply(nfx.remove_special_characters)
-    dataframe[new_column] = dataframe[column].apply(nfx.remove_puncts)
-    dataframe[new_column] = dataframe[column].apply(nfx.remove_emojis)
+    dataframe[new_column] = dataframe[column].apply(nfx.remove_stopwords)\
+    .apply(nfx.remove_special_characters)\
+    .apply(nfx.remove_puncts)\
+    .apply(nfx.remove_emojis)\
+    .apply(str.lower)
 
     return dataframe
 
-def searchTerm(term:str, dataframe, amount:int):
+def searchTerm(term:str, dataframe, amount:int, course:str):
     """_summary_
 
     Args:
@@ -44,6 +45,6 @@ def searchTerm(term:str, dataframe, amount:int):
     Returns:
         Dataframe: Sorted amount of terms
     """
-    result_dataframe = dataframe[dataframe['course_title'].str.contains(term)]
+    result_dataframe = dataframe[dataframe[course].str.contains(term)]
     sorted_amount = result_dataframe.sort_values(by='num_subscribers', ascending=False).head(amount)
     return sorted_amount

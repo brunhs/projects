@@ -16,9 +16,9 @@ class recommendCourse():
 
         sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
 
-        selected_course_index = [i[0] for i in sorted_scores[1:]]
+        selected_course_index = [i[0] for i in sorted_scores[0:]]
 
-        selected_course_score = [i[1] for i in sorted_scores[1:]]
+        selected_course_score = [i[1] for i in sorted_scores[0:]]
 
         rec_df = dataframe.iloc[selected_course_index].join(pd.DataFrame(selected_course_score,
  index=selected_course_index, columns=['Similarity_Score']))

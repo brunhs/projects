@@ -12,14 +12,14 @@ def hello_world():
     if request.method == 'POST':
 
         my_dict = request.form
-        titlename = my_dict['course']
+        titlename = my_dict['course'].lower()
+        df = readData('UdemyCleanedTitle.csv')
+        df = titleManipulation(df, 'course_title', 'Clean_title')
         print(titlename)
         try:
             
-            print('First solution try')
+            print('Trying first solution')
 
-            df = readData('UdemyCleanedTitle.csv')
-            df = titleManipulation(df, 'course_title', 'Clean_title')
             cosine_mat = cosineSimMat(df, 'Clean_title')
 
             recdf = recommendCourse().recommendCourse(df, titlename, cosine_mat, 6)
@@ -36,9 +36,9 @@ def hello_world():
 
         except Exception as e:
             print(e)
-            print('Second solution try')
+            print('Trying second solution')
 
-            resultdf = searchTerm(titlename, df, 6)
+            resultdf = searchTerm(titlename, df, 6, 'Clean_title')
             if resultdf.shape[0] > 6:
                 resultdf = resultdf.head(6)
                 course_url, course_title, course_price = extractFeatures(
