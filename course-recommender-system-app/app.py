@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template
 from dashboard import getvaluecounts, getlevelcount, getsubjectsperlevel, yearwiseprofit
-from model.data_preparation.data_preparation import readData, titleManipulation, cosineSimMat, searchTerm
-from model.utils.utils import extractFeatures
+from model.data_preparation.data_preparation import readData, titleManipulation, searchTerm
+from model.utils.utils import extractFeatures, cosineSimMat
 from model.model import recommendCourse
 
 app = Flask(__name__)
@@ -15,14 +15,14 @@ def hello_world():
         titlename = my_dict['course']
         print(titlename)
         try:
+            
+            print('First solution try')
+
             df = readData('UdemyCleanedTitle.csv')
-            df = titleManipulation(df)
-            cvmat = cosineSimMat(df)
+            df = titleManipulation(df, 'course_title', 'Clean_title')
+            cosine_mat = cosineSimMat(df, 'Clean_title')
 
-            cosine_mat = cosineSimMat(cvmat)
-
-            recdf = recommendCourse().recommendCourse(df, titlename,
-                                     cosine_mat, 6)
+            recdf = recommendCourse().recommendCourse(df, titlename, cosine_mat, 6)
 
             course_url, course_title, course_price = extractFeatures(recdf)
 
@@ -34,7 +34,9 @@ def hello_world():
             else:
                 return render_template('index.html', showerror=True, coursename=titlename)
 
-        except:
+        except Exception as e:
+            print(e)
+            print('Second solution try')
 
             resultdf = searchTerm(titlename, df, 6)
             if resultdf.shape[0] > 6:

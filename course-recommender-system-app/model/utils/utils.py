@@ -1,6 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-def cosineMatrix(dataframe):
+def cosineSimMat(dataframe, column:str):
     """_summary_
 
     Args:
@@ -9,10 +10,10 @@ def cosineMatrix(dataframe):
     Returns:
         Vectorized matrix: Count vectorized matrix
     """
-
+    
     countvect = CountVectorizer()
-    cvmat = countvect.fit_transform(dataframe['Clean_title'])
-    return cvmat
+    cvmat = countvect.fit_transform(dataframe[column])
+    return cosine_similarity(cvmat)
 
 def extractFeatures(rec_dataframe):
     """_summary_
