@@ -12,13 +12,15 @@ def hello_world():
     if request.method == 'POST':
 
         my_dict = request.form
-        titlename = my_dict['course'].lower()
         df = readData('UdemyCleanedTitle.csv')
         df = titleManipulation(df, 'course_title', 'Clean_title')
-        print(titlename)
         try:
             
             print('Trying first solution')
+
+            titlename = my_dict['course']
+    
+            print(titlename)
 
             cosine_mat = cosineSimMat(df, 'Clean_title')
 
@@ -37,6 +39,8 @@ def hello_world():
         except Exception as e:
             print(e)
             print('Trying second solution')
+
+            titlename = my_dict['course'].lower()
 
             resultdf = searchTerm(titlename, df, 6, 'Clean_title')
             if resultdf.shape[0] > 6:
