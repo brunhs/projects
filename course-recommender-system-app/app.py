@@ -6,14 +6,16 @@ from model.model import recommendCourse
 
 app = Flask(__name__)
 
+df = readData('UdemyCleanedTitle.csv')
+df = titleManipulation(df, 'course_title', 'Clean_title')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
 
     if request.method == 'POST':
 
         my_dict = request.form
-        df = readData('UdemyCleanedTitle.csv')
-        df = titleManipulation(df, 'course_title', 'Clean_title')
         try:
             
             print('Trying first solution')
