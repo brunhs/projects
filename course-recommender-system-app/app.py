@@ -1,8 +1,10 @@
 from flask import Flask, request, render_template
 from dashboard import getvaluecounts, getlevelcount, getsubjectsperlevel, yearwiseprofit
 from model.data_preparation.data_preparation import readData, titleManipulation, searchTerm
-from model.utils.utils import extractFeatures, cosineSimMat
+from model.utils.utils import extractFeatures
 from model.model import recommendCourse
+from model.cosine_similarity import ModelCosineSimilarity
+from model.count_vectorizer import ModelCountVectorizer
 
 app = Flask(__name__)
 
@@ -24,7 +26,9 @@ def hello_world():
     
             print(titlename)
 
-            cosine_mat = cosineSimMat(df, 'Clean_title')
+            cv_mat = ModelCountVectorizer('Clean_title').fit_transform(dataframe=df)
+
+            cosine_mat = ModelCosineSimilarity().transform(cv_mat)
 
             recdf = recommendCourse().recommendCourse(df, titlename, cosine_mat, 6)
 
@@ -32,18 +36,22 @@ def hello_world():
 
             dictmap = dict(zip(course_title, course_url))
 
+            #modificar esta parte
+
             if len(dictmap) != 0:
                 return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
 
             else:
                 return render_template('index.html', showerror=True, coursename=titlename)
 
+        # modificar essa excessão
         except Exception as e:
             print(e)
             print('Trying second solution')
 
             titlename = my_dict['course'].lower()
 
+        # modificar essa parte
             resultdf = searchTerm(titlename, df, 6, 'Clean_title')
             if resultdf.shape[0] > 6:
                 resultdf = resultdf.head(6)
@@ -56,6 +64,7 @@ def hello_world():
                 else:
                     return render_template('index.html', showerror=True, coursename=titlename)
 
+        # modificar essa parte
             else:
                 course_url, course_title, course_price = extractFeatures(
                     resultdf)

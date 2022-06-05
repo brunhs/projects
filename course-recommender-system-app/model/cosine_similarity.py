@@ -2,11 +2,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 class ModelCosineSimilarity():
 
-    def __init__(self, X, y):
-        self.X = X
-        self.y = y
+    def __init__(self):
+        pass
 
-    def transform(self):
+    def transform(self, matrix):
 
-        similarity_matrix = cosine_similarity(self.X, self.y)
+        similarity_matrix = cosine_similarity(matrix)
         return similarity_matrix
