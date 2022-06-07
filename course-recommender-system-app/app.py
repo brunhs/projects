@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template
 from dashboard import getvaluecounts, getlevelcount, getsubjectsperlevel, yearwiseprofit
 from model.data_preparation.data_preparation import readData, titleManipulation, searchTerm
-from model.utils.utils import extractFeatures
+from model.utils.utils import extractFeatures, dictMapRender
 from model.model import recommendCourse
 from model.cosine_similarity import ModelCosineSimilarity
 from model.count_vectorizer import ModelCountVectorizer
@@ -17,14 +17,16 @@ def hello_world():
 
     if request.method == 'POST':
 
-        my_dict = request.form
+        myDict = request.form
         try:
             
             print('Trying first solution')
 
-            titlename = my_dict['course']
+            titlename = myDict['course']
     
             print(titlename)
+            
+            #modificar essa parte
 
             cv_mat = ModelCountVectorizer('Clean_title').fit_transform(dataframe=df)
 
@@ -32,14 +34,8 @@ def hello_world():
 
             recdf = recommendCourse().recommendCourse(df, titlename, cosine_mat, 6)
 
-            course_url, course_title, course_price = extractFeatures(recdf)
-
-            dictmap = dict(zip(course_title, course_url))
-
-            #modificar esta parte
-
-            if len(dictmap) != 0:
-                return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
+            if len(recdf) != 0:
+                return render_template('index.html', coursemap=recdf, coursename=titlename, showtitle=True)
 
             else:
                 return render_template('index.html', showerror=True, coursename=titlename)
@@ -49,7 +45,7 @@ def hello_world():
             print(e)
             print('Trying second solution')
 
-            titlename = my_dict['course'].lower()
+            titlename = myDict['course'].lower()
 
         # modificar essa parte
             resultdf = searchTerm(titlename, df, 6, 'Clean_title')
@@ -57,9 +53,10 @@ def hello_world():
                 resultdf = resultdf.head(6)
                 course_url, course_title, course_price = extractFeatures(
                     resultdf)
-                coursemap = dict(zip(course_title, course_url))
-                if len(coursemap) != 0:
-                    return render_template('index.html', coursemap=coursemap, coursename=titlename, showtitle=True)
+                dictmap = dict(zip(course_title, course_url))
+
+                if len(dictmap) != 0:
+                    return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
 
                 else:
                     return render_template('index.html', showerror=True, coursename=titlename)
@@ -68,9 +65,10 @@ def hello_world():
             else:
                 course_url, course_title, course_price = extractFeatures(
                     resultdf)
-                coursemap = dict(zip(course_title, course_url))
-                if len(coursemap) != 0:
-                    return render_template('index.html', coursemap=coursemap, coursename=titlename, showtitle=True)
+                dictmap = dict(zip(course_title, course_url))
+
+                if len(dictmap) != 0:
+                    return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
 
                 else:
                     return render_template('index.html', showerror=True, coursename=titlename)
