@@ -1,65 +1,74 @@
 from flask import Flask, request, render_template
 from dashboard import getvaluecounts, getlevelcount, getsubjectsperlevel, yearwiseprofit
 from model.data_preparation.data_preparation import readData, titleManipulation, searchTerm
-from model.utils.utils import extractFeatures, cosineSimMat
+from model.utils.utils import extractFeatures, dictMapRender
 from model.model import recommendCourse
+from model.cosine_similarity import ModelCosineSimilarity
+from model.count_vectorizer import ModelCountVectorizer
 
 app = Flask(__name__)
+
+df = readData('UdemyCleanedTitle.csv')
+df = titleManipulation(df, 'course_title', 'Clean_title')
+
 
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
 
     if request.method == 'POST':
 
-        my_dict = request.form
-        df = readData('UdemyCleanedTitle.csv')
-        df = titleManipulation(df, 'course_title', 'Clean_title')
+        myDict = request.form
         try:
             
             print('Trying first solution')
 
-            titlename = my_dict['course']
+            titlename = myDict['course']
     
             print(titlename)
+            
+            #modificar essa parte
 
-            cosine_mat = cosineSimMat(df, 'Clean_title')
+            cv_mat = ModelCountVectorizer('Clean_title').fit_transform(dataframe=df)
+
+            cosine_mat = ModelCosineSimilarity().transform(cv_mat)
 
             recdf = recommendCourse().recommendCourse(df, titlename, cosine_mat, 6)
 
-            course_url, course_title, course_price = extractFeatures(recdf)
-
-            dictmap = dict(zip(course_title, course_url))
-
-            if len(dictmap) != 0:
-                return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
+            if len(recdf) != 0:
+                return render_template('index.html', coursemap=recdf, coursename=titlename, showtitle=True)
 
             else:
                 return render_template('index.html', showerror=True, coursename=titlename)
 
+        # modificar essa excessão
         except Exception as e:
             print(e)
             print('Trying second solution')
 
-            titlename = my_dict['course'].lower()
+            titlename = myDict['course'].lower()
 
+        # modificar essa parte
             resultdf = searchTerm(titlename, df, 6, 'Clean_title')
             if resultdf.shape[0] > 6:
                 resultdf = resultdf.head(6)
                 course_url, course_title, course_price = extractFeatures(
                     resultdf)
-                coursemap = dict(zip(course_title, course_url))
-                if len(coursemap) != 0:
-                    return render_template('index.html', coursemap=coursemap, coursename=titlename, showtitle=True)
+                dictmap = dict(zip(course_title, course_url))
+
+                if len(dictmap) != 0:
+                    return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
 
                 else:
                     return render_template('index.html', showerror=True, coursename=titlename)
 
+        # modificar essa parte
             else:
                 course_url, course_title, course_price = extractFeatures(
                     resultdf)
-                coursemap = dict(zip(course_title, course_url))
-                if len(coursemap) != 0:
-                    return render_template('index.html', coursemap=coursemap, coursename=titlename, showtitle=True)
+                dictmap = dict(zip(course_title, course_url))
+
+                if len(dictmap) != 0:
+                    return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
 
                 else:
                     return render_template('index.html', showerror=True, coursename=titlename)

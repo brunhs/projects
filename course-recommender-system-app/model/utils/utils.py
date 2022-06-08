@@ -1,19 +1,4 @@
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-def cosineSimMat(dataframe, column:str):
-    """_summary_
-
-    Args:
-        dataframe (Pandas dataframe): A Pandas dataframe
-
-    Returns:
-        Vectorized matrix: Count vectorized matrix
-    """
-    
-    countvect = CountVectorizer()
-    cvmat = countvect.fit_transform(dataframe[column])
-    return cosine_similarity(cvmat)
+from flask import render_template
 
 def extractFeatures(rec_dataframe):
     """_summary_
@@ -30,3 +15,17 @@ def extractFeatures(rec_dataframe):
     course_price = list(rec_dataframe['price'])
 
     return course_url, course_title, course_price
+
+def dictMapRender(dictmap, titlename):
+
+    if dictmap is None and titlename is None:
+        print('first')
+        return render_template('index.html')
+
+    elif len(dictmap) != 0:
+        print('second')
+        return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
+
+    else:
+        print('third')
+        return render_template('index.html', showerror=True, coursename=titlename)
