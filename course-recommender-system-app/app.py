@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template
-from dashboard import getvaluecounts, getlevelcount, getsubjectsperlevel, yearwiseprofit
 from model.data_preparation.data_preparation import readData, titleManipulation, searchTerm
 from model.utils.utils import extractFeatures, dictMapRender
 from model.model import recommendCourse
@@ -73,24 +72,10 @@ def hello_world():
                 else:
                     return render_template('index.html', showerror=True, coursename=titlename)
 
-    return render_template('index.html')
+    elif request.method == 'GET':
 
-
-@app.route('/dashboard', methods=['GET', 'POST'])
-def dashboard():
-
-    df = readData('UdemyCleanedTitle.csv')
-    valuecounts = getvaluecounts(df)
-
-    levelcounts = getlevelcount(df)
-
-    subjectsperlevel = getsubjectsperlevel(df)
-
-    yearwiseprofitmap, subscriberscountmap, profitmonthwise, monthwisesub = yearwiseprofit(
-        df)
-
-    return render_template('dashboard.html', valuecounts=valuecounts, levelcounts=levelcounts,
-                           subjectsperlevel=subjectsperlevel, yearwiseprofitmap=yearwiseprofitmap, subscriberscountmap=subscriberscountmap, profitmonthwise=profitmonthwise, monthwisesub=monthwisesub)
+        # dictmap = aqui inseriremos o retorno baseado em nota
+        return render_template('prescreen.html')
 
 
 if __name__ == '__main__':
