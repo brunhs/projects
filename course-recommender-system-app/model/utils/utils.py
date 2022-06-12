@@ -1,5 +1,14 @@
 from flask import render_template
 
+def landing_generator(df, amount, kind:str):
+    if kind == 'top_paid':
+        formated_df = df.loc[df['is_paid'] == 'True',:].sort_values('num_reviews', ascending=False).head(amount)
+        final_dict = dict(zip(formated_df.course_title, formated_df.url))
+    elif kind == 'watching':
+        formated_df = df.sort_values('num_subscribers', ascending=False).head(6).loc[:,['course_title', 'url']]
+        final_dict = dict(zip(formated_df.course_title, formated_df.url))
+    return final_dict
+
 def extractFeatures(rec_dataframe):
     """_summary_
 
