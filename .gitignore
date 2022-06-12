@@ -7,3 +7,4 @@ venv/
 *.zip
 *.png
 *.csv
+*.ipynb
