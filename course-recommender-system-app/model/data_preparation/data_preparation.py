@@ -1,7 +1,11 @@
 import pandas as pd
 import neattext.functions as nfx
 
-def readData(file: str, extension='.csv'):
+
+from yaml import safe_load
+from pathlib import Path
+
+def readData(files: str, extension='.csv', path='datasets'):
     """_summary_
 
     Args:
@@ -12,9 +16,30 @@ def readData(file: str, extension='.csv'):
         A Pandas dataframe
     """
     if extension=='.csv':
-        read_func = pd.read_csv
+        courses_dataset = pd.read_csv("%s/%s" %(path, files))
+    elif extension=='.yaml':
+        dpath = Path(path)
 
-    return read_func(file)
+        courses_file = dpath / files
+        with courses_file.open() as f:
+            courses_dataset = pd.json_normalize(safe_load(f))
+
+    return courses_dataset
+
+# def readData(file: str, extension='.csv'):
+#     """_summary_
+
+#     Args:
+#         file (str): Required file to read
+#         extension (str, optional): Extension of the required file. Defaults to '.csv'.
+
+#     Returns:
+#         A Pandas dataframe
+#     """
+#     if extension=='.csv':
+#         read_func = pd.read_csv
+
+#     return read_func(file)
 
 def titleManipulation(dataframe, column:str, new_column:str):
     """_summary_

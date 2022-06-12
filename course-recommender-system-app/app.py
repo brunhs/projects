@@ -1,13 +1,13 @@
 from flask import Flask, request, render_template
 from model.data_preparation.data_preparation import readData, titleManipulation, searchTerm
-from model.utils.utils import extractFeatures, dictMapRender
+from model.utils.utils import extractFeatures, dictMapRender, landing_generator
 from model.model import recommendCourse
 from model.cosine_similarity import ModelCosineSimilarity
 from model.count_vectorizer import ModelCountVectorizer
 
 app = Flask(__name__)
 
-df = readData('UdemyCleanedTitle.csv')
+df = readData(files='UdemyCleanedTitle.csv')
 df = titleManipulation(df, 'course_title', 'Clean_title')
 
 
@@ -74,8 +74,9 @@ def hello_world():
 
     elif request.method == 'GET':
 
-        # dictmap = aqui inseriremos o retorno baseado em nota
-        return render_template('prescreen.html')
+        top_courses_dictmap = landing_generator(df, 6, 'top_paid')
+        watching_dictmap = landing_generator(df, 6, 'watching')
+        return render_template('prescreen.html', first_coursemap=top_courses_dictmap, second_coursemap=watching_dictmap, showtitle=False)
 
 
 if __name__ == '__main__':
