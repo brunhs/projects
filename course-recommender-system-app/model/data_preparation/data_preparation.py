@@ -2,7 +2,6 @@ import pandas as pd
 import neattext.functions as nfx
 
 
-from yaml import safe_load
 from pathlib import Path
 
 def readData(files: str, extension='.csv', path='datasets'):
