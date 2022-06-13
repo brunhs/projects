@@ -1,14 +1,16 @@
 from flask import Flask, request, render_template
-from model.data_preparation.data_preparation import readData, titleManipulation, searchTerm
-from model.utils.utils import extractFeatures, dictMapRender, landing_generator
-from model.model import recommendCourse
+from model.data_preparation.data_preparation import readData, titleManipulation
+from model.utils.utils import landing_generator
+from model.model import RecommendCourse
 from model.cosine_similarity import ModelCosineSimilarity
 from model.count_vectorizer import ModelCountVectorizer
+from model.simple_recommendation_engine import SimpleSearchEngine
 
 app = Flask(__name__)
 
-df = readData(files='UdemyCleanedTitle.csv')
-df = titleManipulation(df, 'course_title', 'Clean_title')
+df = titleManipulation(readData(files='UdemyCleanedTitle.csv'), 'course_title', 'Clean_title')
+cv_mat = ModelCountVectorizer('Clean_title').fit_transform(dataframe=df)
+cosine_mat = ModelCosineSimilarity().transform(cv_mat)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -17,65 +19,27 @@ def hello_world():
     if request.method == 'POST':
 
         myDict = request.form
+        titlename = myDict['course']
         try:
-            
-            print('Trying first solution')
+            print('Trying first solution')                
 
-            titlename = myDict['course']
-    
-            print(titlename)
-            
-            #modificar essa parte
+            recdf = RecommendCourse(titlename, 6).transform(df, cosine_mat)
 
-            cv_mat = ModelCountVectorizer('Clean_title').fit_transform(dataframe=df)
+            return render_template('index.html', coursemap=recdf, coursename=titlename, showtitle=True)
 
-            cosine_mat = ModelCosineSimilarity().transform(cv_mat)
-
-            recdf = recommendCourse().recommendCourse(df, titlename, cosine_mat, 6)
-
-            if len(recdf) != 0:
-                return render_template('index.html', coursemap=recdf, coursename=titlename, showtitle=True)
-
-            else:
-                return render_template('index.html', showerror=True, coursename=titlename)
-
-        # modificar essa excessão
         except Exception as e:
-            print(e)
             print('Trying second solution')
 
-            titlename = myDict['course'].lower()
+            dictmap = SimpleSearchEngine(titlename, 6, 'Clean_title').fit(df).transform()
 
-        # modificar essa parte
-            resultdf = searchTerm(titlename, df, 6, 'Clean_title')
-            if resultdf.shape[0] > 6:
-                resultdf = resultdf.head(6)
-                course_url, course_title, course_price = extractFeatures(
-                    resultdf)
-                dictmap = dict(zip(course_title, course_url))
+            return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
 
-                if len(dictmap) != 0:
-                    return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
-
-                else:
-                    return render_template('index.html', showerror=True, coursename=titlename)
-
-        # modificar essa parte
-            else:
-                course_url, course_title, course_price = extractFeatures(
-                    resultdf)
-                dictmap = dict(zip(course_title, course_url))
-
-                if len(dictmap) != 0:
-                    return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
-
-                else:
-                    return render_template('index.html', showerror=True, coursename=titlename)
 
     elif request.method == 'GET':
 
         top_courses_dictmap = landing_generator(df, 6, 'top_paid')
         watching_dictmap = landing_generator(df, 6, 'watching')
+
         return render_template('prescreen.html', first_coursemap=top_courses_dictmap, second_coursemap=watching_dictmap, showtitle=False)
 
 

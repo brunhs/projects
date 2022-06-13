@@ -26,20 +26,6 @@ def readData(files: str, extension='.csv', path='datasets'):
 
     return courses_dataset
 
-# def readData(file: str, extension='.csv'):
-#     """_summary_
-
-#     Args:
-#         file (str): Required file to read
-#         extension (str, optional): Extension of the required file. Defaults to '.csv'.
-
-#     Returns:
-#         A Pandas dataframe
-#     """
-#     if extension=='.csv':
-#         read_func = pd.read_csv
-
-#     return read_func(file)
 
 def titleManipulation(dataframe, column:str, new_column:str):
     """_summary_
