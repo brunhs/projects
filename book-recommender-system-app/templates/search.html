@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <html lang="en">
+    <head>
+      <link rel="stylesheet" type="text/css" href="static/main.css" />
+      <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/styles.css') }}" /> -->
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap">
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+      <title>Please create an account</title>
+    </head>
+  <body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="/">Books Recommendation System</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+              </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="/">Home</a>
+                  </li>
+
+              </ul>
+
+          </div>
+      </div>
+    </nav>
+
+    <section class="jumbotron text-center">
+      <div class="container">
+          <div class="form-floating my-2">
+              <form action="/" method="POST">
+                  <div class="mb-2">
+                      <input name="course" type="text" class="form-control" id="course" placeholder = 'Search for books'>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Search</button>
+              </form>
+          </div>
+          {% if showtitle%} 
+              <h4 class="jumbotron-heading">Recommended books <span style = "color: red; font-size:1.5rem;">"{{bookname}}"</span> are shown below</h4>
+          {%endif%}
+      </div>
+
+
+      <div>
+        <p> Your name was {{firstname}} and your surname is {{lastname}}</p>
+      </div>
+
+
+    </section>
+
+
+    <div class="album py-5 bg-light">
+      <div class="container">
+
+      {%if coursemap == {}%}
+          <div class="card text-center">
+              
+              <div class="card-body">
+                  <h5 class="card-title">Special title treatment</h5>
+                  <p class="card-text">Seems like the search for "{{coursename}}" is not currently available, we'll report it to the course administrator to upload the course.</p>
+                  <a href="/" class="btn btn-primary">Home Page</a>
+              </div>
+         
+          </div>
+
+
+      {%endif%}
+
+          <div class="row">
+          
+          {%for course in coursemap%}
+
+              <div class="col-md-4">
+                  <div class="card mb-4 shadow-sm">
+
+                      <div class="card-body bg-dark">
+                          <p class="card-text" style = "color:white;">{{course}}</p>
+                          <div class="d-flex justify-content-between align-items-center">
+                              <div class="btn-group">
+                                   <a href="{{coursemap[course]}}" target = "_blank" class="btn btn-outline-danger" style =  "color: white;">View Course</a>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+          {%endfor%}
+
+            
+
+
+          </div>
+          
+      </div>
+  </div>
+
+
+
+    
+  </body>
+</html>
