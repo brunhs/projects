@@ -1,0 +1,58 @@
+*, html {
+	font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+/* Sign-in and Register Page */
+.container {
+	padding: 2em 2em 3em 2em;
+	align-items: left;
+}
+.container_signin {
+	padding: 2em 2em 3em 2em;
+	border: 4px solid #bbb;
+	align-items: left;
+}
+
+.container_signin {
+	align-items: left;
+}
+
+h5 {
+	margin: 0.2em 0;
+}
+
+.form-group {
+	margin: 1.5em 0;
+}
+
+
+
+.message {
+	font-size: 12px;
+	font-weight: 600;
+	max-width: 300px;
+    background: #fff;
+	padding: 1em;
+	border: 2px solid indianred;
+	color: indianred;
+}
+
+input {
+	padding: 0.5em;
+	border: 2px solid #ddd;
+    min-width: 80%;
+}
+
+.container_forgot {
+	text-align: left;
+    margin-top: 1em;
+    font-size: 0.85em;
+}
+
+.container_toregister {
+	margin-bottom: 1.5em;
+    color: #333;
+    font-weight: 600;
+    border: 1px solid lightseagreen;
+    padding: 0.5em;
+}
