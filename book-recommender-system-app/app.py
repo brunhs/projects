@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from os import environ
 
 app = Flask(__name__)
 
@@ -59,32 +60,30 @@ def register():
         single_user = User(fname=firstname,lname=lastname)
         db.session.add(single_user)
         db.session.commit()
-        session['firstname'] = firstname
-        session['lastname'] = lastname
+        # session['firstname'] = firstname
+        # session['lastname'] = lastname
     return render_template('register.html', firstname=firstname, lastname=lastname)
 
-# main page
-@app.route('/main',methods=['GET','POST'])
-def main():
-    if request.method == 'GET':
-        firstname = session.get('firstname')
-        lastname = session.get('lastname')
+# @app.route('/main',methods=['GET','POST'])
+# def main():
+#     if request.method == 'GET':
+#         firstname = session.get('firstname')
+#         lastname = session.get('lastname')
 
-        # if firstname != '' or lastname != '':
-        #     redirect(url_for('main'))
+#         # if firstname != '' or lastname != '':
+#         #     redirect(url_for('main'))
 
-        return render_template('main.html', firstname=firstname, lastname=lastname)
+#         return render_template('main.html', firstname=firstname, lastname=lastname)
 
-# templating
-@app.route('/about')
-def about():
-    mission = 'Optimizing Data and ML Model'
-    return render_template('about.html', mission=mission)
+# @app.route('/about')
+# def about():
+#     mission = 'Optimizing Data and ML Model'
+#     return render_template('about.html', mission=mission)
 
-@app.route('/profile/<fname>')
-def profile():
-    user = User.query.filter_by(fname=fname).first()
-    return render_template('profile.html',user=user)
+# @app.route('/profile/<fname>')
+# def profile():
+#     user = User.query.filter_by(fname=fname).first()
+#     return render_template('profile.html',user=user)
 
 
 
