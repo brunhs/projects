@@ -42,7 +42,7 @@
                   <button type="submit" class="btn btn-primary">Search</button>
               </form>
           </div>
-          {% if showtitle%} 
+          {%if showtitle%} 
               <h4 class="jumbotron-heading">Recommended books <span style = "color: red; font-size:1.5rem;">"{{bookname}}"</span> are shown below</h4>
           {%endif%}
       </div>
@@ -58,32 +58,18 @@
     <div class="album py-5 bg-light">
       <div class="container">
 
-      {%if coursemap == {}%}
-          <div class="card text-center">
-              
-              <div class="card-body">
-                  <h5 class="card-title">Special title treatment</h5>
-                  <p class="card-text">Seems like the search for "{{coursename}}" is not currently available, we'll report it to the course administrator to upload the course.</p>
-                  <a href="/" class="btn btn-primary">Home Page</a>
-              </div>
-         
-          </div>
-
-
-      {%endif%}
-
           <div class="row">
           
-          {%for course in coursemap%}
+          {%for book in bookmap%}
 
               <div class="col-md-4">
                   <div class="card mb-4 shadow-sm">
 
                       <div class="card-body bg-dark">
-                          <p class="card-text" style = "color:white;">{{course}}</p>
+                          <p class="card-text" style = "color:white;">{{book}}</p>
                           <div class="d-flex justify-content-between align-items-center">
                               <div class="btn-group">
-                                   <a href="{{coursemap[course]}}" target = "_blank" class="btn btn-outline-danger" style =  "color: white;">View Course</a>
+                                   <a href="{{bookmap[course]}}" target = "_blank" class="btn btn-outline-danger" style =  "color: white;">View Course</a>
                               </div>
                           </div>
                       </div>
