@@ -28,3 +28,10 @@ def landing_generator(dataframe, amount, kind:str):
             .droplevel(level=0, axis=1).reset_index().loc[:,['Book-Title', 'Image-URL-L']]
         final_dict = dict(zip(formated_dataframe['Book-Title'], formated_dataframe['Image-URL-L']))
     return final_dict
+
+
+def custom_id():
+    idquery = db.session.query(User).order_by(User.user_id.desc()).first()
+    last_id = int(idquery.user_id)
+    next_id = int(last_id) + 1
+    return next_id

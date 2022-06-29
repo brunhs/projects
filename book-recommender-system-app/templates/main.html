@@ -9,6 +9,7 @@
       <meta http-equiv="X-UA-Compatible" content="ie=edge" />
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap">
+      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
       <title>Please create an account</title>
     </head>
@@ -58,21 +59,35 @@
     <div class="album py-5 bg-light">
       <div class="container">
 
+        <h2 class="jumbotron-heading">Users been reading:</h2>
+
           <div class="row">
           
           {%for book in bookmap%}
 
-              <div class="col-md-4">
-                  <div class="card mb-4 shadow-sm">
+              <div class="col-md-4 ">
+                  <div id="books-cards" class="card mb-4 background-none">
 
-                      <div class="card-body bg-dark">
-                          <p class="card-text" style = "color:white;">{{book}}</p>
-                          <div class="d-flex justify-content-between align-items-center">
-                              <div class="btn-group">
-                                   <a href="{{bookmap[course]}}" target = "_blank" class="btn btn-outline-danger" style =  "color: white;">View Course</a>
-                              </div>
-                          </div>
+                    <div class="col-lg-6 title-image-div mx-auto">
+                        <img src="{{bookmap[book]}}">
+                    </div>
+
+                    <div class="stars mx-auto">
+                        <form action="/main">
+                          <input class="star star-5" id="star-5" type="radio" name="star"/>
+                          <label class="star star-5" for="star-5"></label>
+                          <input class="star star-4" id="star-4" type="radio" name="star"/>
+                          <label class="star star-4" for="star-4"></label>
+                          <input class="star star-3" id="star-3" type="radio" name="star"/>
+                          <label class="star star-3" for="star-3"></label>
+                          <input class="star star-2" id="star-2" type="radio" name="star"/>
+                          <label class="star star-2" for="star-2"></label>
+                          <input class="star star-1" id="star-1" type="radio" name="star"/>
+                          <label class="star star-1" for="star-1"></label>
+                        </form>
                       </div>
+                                
+                      
                   </div>
               </div>
 
