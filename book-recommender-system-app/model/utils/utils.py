@@ -30,8 +30,8 @@ def landing_generator(dataframe, amount, kind:str):
     return final_dict
 
 
-def custom_id():
-    idquery = db.session.query(User).order_by(User.user_id.desc()).first()
+def custom_id(database, schema):
+    idquery = database.session.query(schema).order_by(schema.user_id.desc()).first()
     last_id = int(idquery.user_id)
     next_id = int(last_id) + 1
-    return next_id
+    return last_id, next_id
