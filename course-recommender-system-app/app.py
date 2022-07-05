@@ -5,6 +5,7 @@ from model.model import RecommendCourse
 from model.cosine_similarity import ModelCosineSimilarity
 from model.count_vectorizer import ModelCountVectorizer
 from model.simple_recommendation_engine import SimpleSearchEngine
+from os import environ
 
 app = Flask(__name__)
 
@@ -44,4 +45,4 @@ def hello_world():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=environ.get("PORT", 5000), host="0.0.0.0")
