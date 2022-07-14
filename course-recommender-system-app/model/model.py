@@ -35,6 +35,9 @@ class RecommendCourse():
 
         selected_course_score = [i[1] for i in sorted_scores[0:]]
 
+        # Essa parte daqui pra frente é só ajuste de dado, né? podia ser um método separado
+        # daí então teria um método que calcula o score, seleciona os recomendados
+        # e outro que prepara pro display
         rec_df = dataframe.iloc[selected_course_index].join(pd.DataFrame(selected_course_score,
              index=selected_course_index, columns=['Similarity_Score']))
 

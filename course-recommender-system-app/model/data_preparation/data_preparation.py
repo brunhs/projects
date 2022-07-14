@@ -25,7 +25,7 @@ def readData(files: str, extension='.csv', path='datasets'):
 
     return courses_dataset
 
-
+# eu chamaria esse cara de "clean_title" :D
 def titleManipulation(dataframe, column:str, new_column:str):
     """_summary_
 
@@ -44,6 +44,7 @@ def titleManipulation(dataframe, column:str, new_column:str):
 
     return dataframe
 
+# Essa função podia estar no simple_recommendation_engine
 def searchTerm(term:str, dataframe, amount:int, course:str):
     """_summary_
 

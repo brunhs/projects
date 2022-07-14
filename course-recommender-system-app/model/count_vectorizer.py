@@ -1,5 +1,6 @@
 from sklearn.feature_extraction.text import CountVectorizer
 
+
 class ModelCountVectorizer():
     """
     Count vectorize a matrix.
@@ -22,6 +23,8 @@ class ModelCountVectorizer():
         """
         
         self.vectorizer_fit = self.vectorizer.fit(dataframe[self.column])
+        # os .fit do sklearn sempre são inplace, ou seja, aqui vc acaba com um self.vectorizer_fit == self.vectorizer
+        # então dá pra rodar só o fit
         return self
 
     def transform(self, dataframe):
@@ -34,7 +37,13 @@ class ModelCountVectorizer():
         Returns:
             numpy.array: count vectorized numpy.array.
         """
-
+        #############
+        # importante!
+        # aqui vc só tem a opção de transformar um df, acho que é mais versátil (e necessário pra solução q a gente
+        #   conversou) se tiver um jeito de converter uma string tb
+        # eu acho que a "api" ideal seria ter um fit_transform q funcionasse pra uma lista, e aí vc passa
+        # ou algo tipo transform([query]) ou transform(df[column])
+        #############
         vectorized_matrix = self.vectorizer_fit.transform(dataframe[self.column])
         return vectorized_matrix
 

@@ -11,8 +11,12 @@ app = Flask(__name__)
 
 df = titleManipulation(readData(files='UdemyCleanedTitle.csv'), 'course_title', 'Clean_title')
 cv_mat = ModelCountVectorizer('Clean_title').fit_transform(dataframe=df)
-cosine_mat = ModelCosineSimilarity().transform(cv_mat)
+# eu faria assim:
+# cv_model = ModelCountVectorizer("Clean_title")
+# cv_mat = cv_model.fit_transform(df)
 
+cosine_mat = ModelCosineSimilarity().transform(cv_mat) # não precisaria fazer esse cálculo aqui
+# aqui eu colocaria um rec = Recommender(cv_model, cv_mat)
 
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
@@ -21,6 +25,12 @@ def hello_world():
 
         myDict = request.form
         titlename = myDict['course']
+        #
+        # Como a gente conversou, aqui não precisam ser 2 opções separadas
+        # o ideal seria sempre fazer o Vectorizer do input e aí recomendar a partir da distância
+        # de cosseno entre ele e os cursos disponiveis
+        # Vou fazer um "mock_model.py" com +- o que eu acho que daria pra usar
+        #
         try:
             print('Trying first solution')                
 
