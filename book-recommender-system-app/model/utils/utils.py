@@ -34,24 +34,28 @@ def custom_id(database, schema):
     next_id = int(last_id) + 1
     return last_id, next_id
 
-def get_google_api_results(isbn):
+def isbn_information_parser(isbn, database, schema):
     response_string = f'https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}'
     xml = urllib2.urlopen(response_string)
     book_data = json.load(xml)
 
     results = dict()
-    results['isbn'] = isbn
-    if book_data.get('items')[0].get('volumeInfo').get('title') != 'None':
-
-        results['title'] = book_data.get('items')[0].get('volumeInfo').get('title')
-        results['publication_date'] = book_data.get('items')[0].get('volumeInfo').get('publishedDate')
-        results['authors'] = book_data.get('items')[0].get('volumeInfo').get('authors')
-        results['description'] = book_data.get('items')[0].get('volumeInfo').get('description')
+    if 'item' in book_data:
+        results['isbn'] = isbn
+        try:
+            results['title'] = book_data.get('items')[0].get('volumeInfo').get('title')
+            results['publication_date'] = book_data.get('items')[0].get('volumeInfo').get('publishedDate')
+            results['authors'] = book_data.get('items')[0].get('volumeInfo').get('authors')
+            results['description'] = book_data.get('items')[0].get('volumeInfo').get('description')
+            results['image_url'] = book_data.get('items')[1].get('volumeInfo').get('imageLinks').get('thumbnail')
+        except:
+            pass
     else:
-        pass
-    try:
-        results['image_url'] = book_data.get('items')[1].get('volumeInfo').get('imageLinks').get('thumbnail')
-    except:
-        pass
+        book_query=database.session.query(schema).filter(schema.isbn == isbn).first()
+        results['isbn'] = isbn
+        results['title'] = book_query.book_title
+        results['publication_date'] = book_query.year_of_publication
+        results['authors'] = book_query.book_author
+        results['image_url'] = book_query.image_url_l
 
     return results
