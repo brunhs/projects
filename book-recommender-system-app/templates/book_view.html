@@ -32,7 +32,18 @@
         </div>
     </nav>
   
-
+  <script type="text/javascript">
+    $(function(){
+      var requiredCheckboxes = $('.browsers :checkbox[required]');
+      requiredCheckboxes.change(function(){
+          if(requiredCheckboxes.is(':checked')) {
+              requiredCheckboxes.removeAttr('required');
+          } else {
+              requiredCheckboxes.attr('required', 'required');
+          }
+        });
+       });
+  </script>
 
     {% block main %}
       <div class="container">
@@ -41,7 +52,7 @@
         <div class="card" id="bookcard">
             <h6 class="card-header">{{ book.title }}</h4>
             {% if book.isbn %} 
-            <form class="rating_form" action="/new-rating" method="POST">
+            <form class="rating_form" action="/book_view/{{book.isbn}}" method="POST">
               <select id="isbn10" class="isbn10" name="isbn10" type="hidden">
                   <option value="{{book.isbn}}">{{book.isbn}}</option>
               </select>
@@ -59,16 +70,23 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td><input type="radio" name="rating" value=1 /></td>
-                      <td><input type="radio" name="rating" value=2 /></td>
-                      <td><input type="radio" name="rating" value=3 /></td>
-                      <td><input type="radio" name="rating" value=4 /></td>
-                      <td><input type="radio" name="rating" value=5 /></td>
+                      <td><input type="radio" name="rating" value=1 required /></td>
+                      <td><input type="radio" name="rating" value=2 required /></td>
+                      <td><input type="radio" name="rating" value=3 required /></td>
+                      <td><input type="radio" name="rating" value=4 required /></td>
+                      <td><input type="radio" name="rating" value=5 required /></td>
                     </tr>
                   </tbody>
                 </table>
       
               </div>
+
+              <div class="container_creds">
+                {% if message %}
+                  <p class="message">{{ message | safe }}</p>
+                  {% endif %}
+              </div>
+    
               <input type="submit" value="Submit rating" class="btn btn-smal btn-info" />
             </form>
             {% else %}

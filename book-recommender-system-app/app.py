@@ -1,14 +1,13 @@
 from flask import Flask, render_template, request, session, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from model.utils.utils import landing_generator, custom_id, get_google_api_results
+from model.utils.utils import landing_generator, custom_id, isbn_information_parser
 import uuid
-import pandas as pd
+from sqlalchemy import func
+import datetime
 
 app = Flask(__name__)
 
 app.config.from_object('config.DevConfig')
-
-# book_user_rating = pd.read_csv('datasets/Book_user_rating.csv')
 
 # database
 db = SQLAlchemy(app)
@@ -42,7 +41,8 @@ class Rating(db.Model):
     rating_uuid=db.Column(db.String(50))
     timestamp=db.Column(db.DateTime)
 
-    def __init__(self,  isbn, book_rating, uuid, rating_uuid, timestamp):
+    def __init__(self, user_id,  isbn, book_rating, uuid, rating_uuid, timestamp):
+        self.user_id = user_id
         self.isbn = isbn
         self.book_rating = book_rating
         self.uuid = uuid
@@ -61,8 +61,9 @@ class Search(db.Model):
         self.lname = lname
 
 # rating schema
-class Books(db.Model):
+class Book(db.Model):
     __tablename__= 'book'
+    index=db.Column(db.Integer)
     isbn=db.Column(db.String(200), primary_key=True)
     book_title=db.Column(db.String(200))
     book_author=db.Column(db.String(200))
@@ -74,8 +75,9 @@ class Books(db.Model):
     rating=db.Column(db.Float)
     rating_count=db.Column(db.Float)
 
-    def __init__(self, isbn, book_title, book_author, year_of_publication, publisher,
+    def __init__(self, index, isbn, book_title, book_author, year_of_publication, publisher,
      image_url_s, image_url_m, image_url_l, rating, rating_count):
+        self.index=index
         self.isbn = isbn
         self.book_title = book_title
         self.book_author = book_author
@@ -114,7 +116,8 @@ def register():
             session['firstname'] = firstname
             session['lastname'] = lastname
             session['uuid'] = user_uuid
-            return render_template('register.html', message=f'Hi {firstname} {lastname}, welcome back!'), {"Refresh": "5; url=main"}
+            session['user_id'] = user_id
+            return render_template('register.html', message=f'Hi {firstname} {lastname}, welcome back!'), {"Refresh": "3; url=main"}
 
     return render_template('register.html')
 
@@ -125,6 +128,7 @@ def main():
         lastname = session.get('lastname')
 
         # recuperando informação
+        # ajustar isso para que recuperemos informação de maneira diferente
         ratings = db.session.query(Rating).filter(Rating.user_id == 276725).all()
         ratings_list = []
         for i in ratings:
@@ -132,16 +136,14 @@ def main():
 
         # salvando informação
         print(session.get('uuid'))
-        # user_rating = Rating(isbn=, book_rating=, uuid=, rating_uuid=, timestamp=)
 
-        bookmap = landing_generator(db, Books, 6, 'top_rated')
+        bookmap = landing_generator(db, Book, 6, 'top_rated')
 
-        # print(bookmap[0]['isbn'])
-        return render_template('main.html', firstname=firstname, lastname=lastname, bookmap=bookmap, ratings=ratings_list)
+        return render_template('main.html', firstname=firstname, lastname=lastname, bookmap=bookmap)
 
     if request.method == 'POST':
   
-        bookmap = landing_generator(db, Books, 6, 'top_rated')
+        bookmap = landing_generator(db, Book, 6, 'top_rated')
 
         return render_template('main.html', firstname=firstname, lastname=lastname, bookmap=bookmap)
 
@@ -158,19 +160,44 @@ def profile():
 @app.route('/book_view/<isbn>',methods=['POST', 'GET'])
 def book_view(isbn):
 
+    # ajustar isso para recuperar informação do datalake caso a api não funcione
+    isbn_information=isbn_information_parser(isbn, database=db, schema=Book)
 
-    ggapi = get_google_api_results(isbn)
 
-    # if request.method == 'POST':
+    if request.method == 'POST':
         
-    #     user_id = request.form['rating']
-    #     user_id = request.form['rating']
-    #     user_uuid = uuid.uuid4().hex
-    #     book_isbn = isbn
-    #     if firstname == '' or lastname == '':
-    #         return render_template('register.html', message='Please include your first name AND your last name.')
+        rating=int(request.form['rating'])*2
+        user_uuid=session.get('uuid')
+        book_isbn=isbn
+        rating_uuid=uuid.uuid4().hex
+        timestamp=datetime.datetime.now()
+        user_id=session.get('user_id')
 
-    return render_template('book_view.html', book=ggapi)
+        print(rating, user_uuid, book_isbn, rating_uuid, timestamp, user_id)
+        
+        # agora precisamos salvar a nova avaliação baseado no uuid, isbn
+        book_rates = Rating(user_id = user_id, isbn=book_isbn, book_rating=rating, uuid=user_uuid, rating_uuid=rating_uuid, timestamp=timestamp)
+        db.session.add(book_rates)
+        db.session.commit()
+
+        # get altered isbn number
+        altered_isbn = db.session.query(Rating).order_by(Rating.timestamp.desc()).first().isbn
+
+        # bring all the data from that isbn number
+        new_book_rate = db.session.query(Rating.isbn, func.avg(Rating.book_rating), func.count(Rating.book_rating))\
+            .filter(Rating.isbn == altered_isbn).first()
+
+        # bring all book data based on last isbn
+        book_to_update = db.session.query(Book)\
+            .filter(Book.isbn == book_isbn)
+
+        book_to_update.update({"rating":round(new_book_rate[1],0), "rating_count":new_book_rate[2]})
+
+        db.session.commit() 
+
+        return render_template('book_view.html', message=f"Thank you for your vote! You'll be redirected in 3 seconds", book=isbn_information), {"Refresh": "3; url=../main"}
+
+    return render_template('book_view.html', book=isbn_information)
 
 
 
