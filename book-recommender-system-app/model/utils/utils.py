@@ -40,14 +40,14 @@ def isbn_information_parser(isbn, database, schema):
     book_data = json.load(xml)
 
     results = dict()
-    if 'item' in book_data:
+    if 'items' in book_data:
         results['isbn'] = isbn
         try:
             results['title'] = book_data.get('items')[0].get('volumeInfo').get('title')
             results['publication_date'] = book_data.get('items')[0].get('volumeInfo').get('publishedDate')
             results['authors'] = book_data.get('items')[0].get('volumeInfo').get('authors')
             results['description'] = book_data.get('items')[0].get('volumeInfo').get('description')
-            results['image_url'] = book_data.get('items')[1].get('volumeInfo').get('imageLinks').get('thumbnail')
+            results['image_url'] = book_data.get('items')[0].get('volumeInfo').get('imageLinks').get('thumbnail')
         except:
             pass
     else:

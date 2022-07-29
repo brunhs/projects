@@ -134,9 +134,6 @@ def main():
         for i in ratings:
             ratings_list.append([i.isbn, i.book_rating])
 
-        # salvando informação
-        print(session.get('uuid'))
-
         bookmap = landing_generator(db, Book, 6, 'top_rated')
 
         return render_template('main.html', firstname=firstname, lastname=lastname, bookmap=bookmap)
@@ -163,6 +160,7 @@ def book_view(isbn):
     # ajustar isso para recuperar informação do datalake caso a api não funcione
     isbn_information=isbn_information_parser(isbn, database=db, schema=Book)
 
+    print(isbn_information)
 
     if request.method == 'POST':
         
