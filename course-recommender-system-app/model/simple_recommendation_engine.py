@@ -9,6 +9,8 @@ class SimpleSearchEngine():
         self.course = course
 
     def fit(self, dataframe):
+        # Essa função searchTerm podia estar nesse arquivo, é bem confuso ela estar nos utils
+        # E ela não é usada em nenhum outro lugar, né
         self.search_dataframe = searchTerm(self.search_term, dataframe, self.amount, self.course)
 
         return self
