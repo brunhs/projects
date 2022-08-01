@@ -1,5 +1,20 @@
 from model.utils.utils import extractFeatures
-from model.data_preparation.data_preparation import searchTerm
+
+
+def searchTerm(term:str, dataframe, amount:int, course:str):
+    """_summary_
+
+    Args:
+        term (str): Term to be searhhed
+        dataframe (_type_): Pandas dataframe
+        amount (int): Amount of terms to return
+
+    Returns:
+        Dataframe: Sorted amount of terms
+    """
+    result_dataframe = dataframe[dataframe[course].str.contains(term)]
+    sorted_amount = result_dataframe.sort_values(by='num_subscribers', ascending=False).head(amount)
+    return sorted_amount
 
 class SimpleSearchEngine():
 
@@ -9,6 +24,8 @@ class SimpleSearchEngine():
         self.course = course
 
     def fit(self, dataframe):
+        # Essa função searchTerm podia estar nesse arquivo, é bem confuso ela estar nos utils
+        # E ela não é usada em nenhum outro lugar, né
         self.search_dataframe = searchTerm(self.search_term, dataframe, self.amount, self.course)
 
         return self

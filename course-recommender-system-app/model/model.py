@@ -10,7 +10,7 @@ class RecommendCourse():
         self.title = title
         self.numrec = numrec
     
-    def transform(self, dataframe, similarity_matrix):
+    def _enumerate_courses(self, dataframe, similarity_matrix):
         """
         Transform dataframe into recommendation dataframe.
 
@@ -34,6 +34,11 @@ class RecommendCourse():
         selected_course_index = [i[0] for i in sorted_scores[0:]]
 
         selected_course_score = [i[1] for i in sorted_scores[0:]]
+
+        return selected_course_index, selected_course_score
+        
+    def transform(self, dataframe, similarity_matrix):
+        selected_course_index, selected_course_score = self._enumerate_courses(dataframe, similarity_matrix)
 
         rec_df = dataframe.iloc[selected_course_index].join(pd.DataFrame(selected_course_score,
              index=selected_course_index, columns=['Similarity_Score']))

@@ -25,8 +25,7 @@ def readData(files: str, extension='.csv', path='datasets'):
 
     return courses_dataset
 
-
-def titleManipulation(dataframe, column:str, new_column:str):
+def cleanTitle(dataframe, column:str, new_column:str):
     """_summary_
 
     Args:
@@ -43,18 +42,3 @@ def titleManipulation(dataframe, column:str, new_column:str):
     .apply(str.lower)
 
     return dataframe
-
-def searchTerm(term:str, dataframe, amount:int, course:str):
-    """_summary_
-
-    Args:
-        term (str): Term to be searhhed
-        dataframe (_type_): Pandas dataframe
-        amount (int): Amount of terms to return
-
-    Returns:
-        Dataframe: Sorted amount of terms
-    """
-    result_dataframe = dataframe[dataframe[course].str.contains(term)]
-    sorted_amount = result_dataframe.sort_values(by='num_subscribers', ascending=False).head(amount)
-    return sorted_amount
