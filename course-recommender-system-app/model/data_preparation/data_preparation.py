@@ -5,7 +5,8 @@ import neattext.functions as nfx
 from pathlib import Path
 
 def readData(files: str, extension='.csv', path='datasets'):
-    """_summary_
+    """
+    Function responsible to read the data
 
     Args:
         file (str): Required file to read

@@ -1,56 +1,33 @@
 from flask import Flask, request, render_template
 from model.data_preparation.data_preparation import readData, cleanTitle
 from model.utils.utils import landing_generator
-from model.model import RecommendCourse
-from model.cosine_similarity import ModelCosineSimilarity
+from model.model import Recommender
 from model.count_vectorizer import ModelCountVectorizer
-from model.simple_recommendation_engine import SimpleSearchEngine
+from model.scorer import ModelScorer
 from os import environ
 
 app = Flask(__name__)
 
-df = cleanTitle(readData(files='UdemyCleanedTitle.csv'), 'course_title', 'Clean_title')
-cv_mat = ModelCountVectorizer('Clean_title').fit_transform(dataframe=df)
-cosine_mat = ModelCosineSimilarity().transform(cv_mat)
-# eu faria assim:
-# cv_model = ModelCountVectorizer("Clean_title")
-# cv_mat = cv_model.fit_transform(df)
-
-# cosine_mat = ModelCosineSimilarity().transform(cv_mat) # não precisaria fazer esse cálculo aqui
-# # aqui eu colocaria um rec = Recommender(cv_model, cv_mat)
+dataframe = cleanTitle(readData(files='UdemyCleanedTitle.csv'), 'course_title', 'clean_title')
+cv_mat = ModelCountVectorizer('clean_title').fit_transform(dataframe)
+cv_model = ModelCountVectorizer('clean_title').fit(dataframe)
 
 @app.route('/', methods=['GET', 'POST'])
-def hello_world():
+def courses_app():
 
     if request.method == 'POST':
 
-        myDict = request.form
-        titlename = myDict['course']
-         #
-        # Como a gente conversou, aqui não precisam ser 2 opções separadas
-        # o ideal seria sempre fazer o Vectorizer do input e aí recomendar a partir da distância
-        # de cosseno entre ele e os cursos disponiveis
-        # Vou fazer um "mock_model.py" com +- o que eu acho que daria pra usar
-        #
-        try:
-            print('Trying first solution')                
+        my_dict = request.form
+        request_string = my_dict['course']
+        recdf = Recommender(cv_model=cv_model, cv_mat=cv_mat, dataframe=dataframe, scorer_class=ModelScorer()).recommend(request_string)
 
-            recdf = RecommendCourse(titlename, 6).transform(df, cosine_mat)
-
-            return render_template('index.html', coursemap=recdf, coursename=titlename, showtitle=True)
-
-        except Exception as e:
-            print('Trying second solution')
-
-            dictmap = SimpleSearchEngine(titlename, 6, 'Clean_title').fit(df).transform()
-
-            return render_template('index.html', coursemap=dictmap, coursename=titlename, showtitle=True)
+        return render_template('index.html', coursemap=recdf, coursename=request_string, showtitle=True)
 
 
     elif request.method == 'GET':
 
-        top_courses_dictmap = landing_generator(df, 6, 'top_paid')
-        watching_dictmap = landing_generator(df, 6, 'watching')
+        top_courses_dictmap = landing_generator(dataframe, 6, 'top_paid')
+        watching_dictmap = landing_generator(dataframe, 6, 'watching')
 
         return render_template('prescreen.html', first_coursemap=top_courses_dictmap, second_coursemap=watching_dictmap, showtitle=False)
 
