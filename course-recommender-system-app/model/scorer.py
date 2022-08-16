@@ -6,7 +6,6 @@ class ModelScorer():
     """
     def __init__(self, method='cosine'):
         self.method=method
-        pass
 
     def transform(self, X, y=None):
         """

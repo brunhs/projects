@@ -1,53 +1,77 @@
-import pandas as pd
 from model.utils.utils import extractFeatures
+from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
 
-class RecommendCourse():
+class Recommender():
     """
-    Recommend courses based on perfect name match.
-    """
-
-    def __init__(self, title, numrec):
-        self.title = title
-        self.numrec = numrec
+    Recommender class responsible for calculating a recommendation for the user, using it's search interest.
     
-    def _enumerate_courses(self, dataframe, similarity_matrix):
+    """
+    def __init__(self, cv_model, cv_mat, dataframe):
+        self.cv_model = cv_model 
+        self.cv_mat = cv_mat 
+        self.dataframe = dataframe
+
+    def _transform_input(self, input_str):
         """
-        Transform dataframe into recommendation dataframe.
+        Receives a search string and returns a vector.
 
         Args:
-            dataframe (dataframe): Dataframe containing all courses informations.
-            similarity_matrix (dataframe): Dataframe containing similarity informations.
+            input_str (string): String containing the search.
 
         Returns:
-            dictionar: Recommended courses dictionary
+            array: Returns the vectorized transformed array.
+        """        
+        return self.cv_model.transform([input_str])
+
+    def _compute_scores(self, input_vec):
         """
+        Receives the search vector and computes the similarities with the whole matrix.
 
-        course_index = pd.Series(
-            dataframe.index, index=dataframe['course_title']).drop_duplicates()
+        Args:
+            input_vec (array): Input of count vector.
 
-        index = course_index[self.title]
+        Returns:
+            array: Similarity array.
+        """        
+        return self.scorer.transform(self.cv_mat, input_vec)
 
-        scores = list(enumerate(similarity_matrix[index]))
+    def _score_to_dict(self, dataframe, course_index, course_score):
 
-        sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
 
-        selected_course_index = [i[0] for i in sorted_scores[0:]]
-
-        selected_course_score = [i[1] for i in sorted_scores[0:]]
-
-        return selected_course_index, selected_course_score
-        
-    def transform(self, dataframe, similarity_matrix):
-        selected_course_index, selected_course_score = self._enumerate_courses(dataframe, similarity_matrix)
-
-        rec_df = dataframe.iloc[selected_course_index].join(pd.DataFrame(selected_course_score,
-             index=selected_course_index, columns=['Similarity_Score']))
+        rec_df = dataframe.iloc[course_index].join(pd.DataFrame(course_score,
+             index=course_index, columns=['similarity_score']))
 
         final_recommended_courses = rec_df[[
-            'course_title', 'Similarity_Score', 'url', 'price', 'num_subscribers']].head(self.numrec)
+            'course_title', 'similarity_score', 'url', 'price', 'num_subscribers']]
 
         course_url, course_title, course_price = extractFeatures(final_recommended_courses)
 
         transformed_dict = dict(zip(course_title, course_url))
 
         return transformed_dict
+
+
+    def recommend(self, input_str, n_results=6, column_name='scores'):
+        """
+        Returns the indexes of the top courses based on their proximity
+
+        Args:
+            input_str (string): User search string.
+            n_results (int, optional): Amount of results required by the user. Defaults to 6.
+            column_name (str, optional): Column name for proximity scores. Defaults to 'scores'.
+
+        Returns:
+            dict: Dict containing user proximal results.
+        """
+        """
+        retorna os índices dos top 6 cursos pela proximidade com a query/input
+        outra função ou classe cuidaria de pegar as informações certinho do DF
+        """
+        scores = pd.DataFrame(self._compute_scores(self._transform_input(input_str)), columns=[column_name])
+        ordered_scores = scores[scores>0].dropna().sort_values(by=column_name, ascending=False)
+        top_indexes = ordered_scores[:n_results].index
+        top_scores = ordered_scores[:n_results].values
+        recommended_courses = self._score_to_dict(self.dataframe, top_indexes, top_scores)
+        
+        return recommended_courses
