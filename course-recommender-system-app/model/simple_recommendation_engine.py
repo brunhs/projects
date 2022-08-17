@@ -9,11 +9,26 @@ class SimpleSearchEngine():
         self.course = course
 
     def fit(self, dataframe):
+        """
+        Fit the data to the search term function.
+
+        Args:
+            dataframe (pandas.dataframe): Dataframe containing all the database.
+
+        Returns:
+            pandas.dataframe: Returns the fitted dataframe.
+        """        
         self.search_dataframe = self.searchTerm(self.search_term, dataframe, self.amount, self.course)
 
         return self
 
     def transform(self):
+        """
+        Transform dataset into recommendations.
+
+        Returns:
+            dict: Dictionar containing recommendations.
+        """        
         if self.search_dataframe.shape[0] >= self.amount:
             course_url, course_title, course_price = extractFeatures(
                 self.search_dataframe.head(self.amount))
@@ -30,12 +45,12 @@ class SimpleSearchEngine():
         """_summary_
 
         Args:
-            term (str): Term to be searhhed
-            dataframe (_type_): Pandas dataframe
-            amount (int): Amount of terms to return
+            term (str): Term to be searched.
+            dataframe (_type_): Pandas dataframe.
+            amount (int): Amount of terms to return.
 
         Returns:
-            Dataframe: Sorted amount of terms
+            Dataframe: Sorted amount of terms.
         """
         result_dataframe = dataframe[dataframe[course].str.contains(term)]
         sorted_amount = result_dataframe.sort_values(by='num_subscribers', ascending=False).head(amount)

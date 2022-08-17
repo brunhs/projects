@@ -1,5 +1,4 @@
 from model.utils.utils import extractFeatures
-from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 
 class Recommender():
@@ -7,10 +6,11 @@ class Recommender():
     Recommender class responsible for calculating a recommendation for the user, using it's search interest.
     
     """
-    def __init__(self, cv_model, cv_mat, dataframe):
-        self.cv_model = cv_model 
-        self.cv_mat = cv_mat 
+    def __init__(self, cv_model, cv_mat, dataframe, scorer_class):
+        self.cv_model = cv_model
+        self.cv_mat = cv_mat
         self.dataframe = dataframe
+        self.scorer = scorer_class
 
     def _transform_input(self, input_str):
         """
@@ -54,7 +54,7 @@ class Recommender():
 
     def recommend(self, input_str, n_results=6, column_name='scores'):
         """
-        Returns the indexes of the top courses based on their proximity
+        Returns the indexes of the top courses based on their proximity.
 
         Args:
             input_str (string): User search string.
@@ -66,7 +66,7 @@ class Recommender():
         """
         """
         retorna os índices dos top 6 cursos pela proximidade com a query/input
-        outra função ou classe cuidaria de pegar as informações certinho do DF
+        outra função ou classe cuidaria de pegar as informações certinho do DF.
         """
         scores = pd.DataFrame(self._compute_scores(self._transform_input(input_str)), columns=[column_name])
         ordered_scores = scores[scores>0].dropna().sort_values(by=column_name, ascending=False)
