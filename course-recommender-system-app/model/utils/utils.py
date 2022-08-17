@@ -2,7 +2,7 @@ from flask import render_template
 
 def landing_generator(dataframe, amount, kind:str):
     """
-    Loading screen generator
+    Loading screen generator.
 
     Args:
         dataframe (dataframe): Dataframe.
