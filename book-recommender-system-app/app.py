@@ -123,6 +123,11 @@ def register():
 
 @app.route('/main',methods=['GET','POST'])
 def main():
+    if request.method == 'POST':
+
+        my_dict = request.form
+        request_string = my_dict['course']
+
     if request.method == 'GET':
         firstname = session.get('firstname')
         lastname = session.get('lastname')
