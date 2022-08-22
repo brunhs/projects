@@ -64,10 +64,6 @@ class Recommender():
         Returns:
             dict: Dict containing user proximal results.
         """
-        """
-        retorna os índices dos top 6 cursos pela proximidade com a query/input
-        outra função ou classe cuidaria de pegar as informações certinho do DF.
-        """
         scores = pd.DataFrame(self._compute_scores(self._transform_input(input_str)), columns=[column_name])
         ordered_scores = scores[scores>0].dropna().sort_values(by=column_name, ascending=False)
         top_indexes = ordered_scores[:n_results].index
