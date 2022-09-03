@@ -9,6 +9,7 @@ import random
 import string
 import pytesseract
 
+
 # Adding path to config
 app.config['INITIAL_FILE_UPLOADS'] = 'app/static/uploads'
 
