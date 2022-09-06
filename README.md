@@ -18,4 +18,8 @@ Folder for any other deployments in AWS, GCP or other cloud services, used as fo
 
 * [Text extraction app](https://github.com/brunhs/projects/tree/main/text-extraction-app)
 
-Text extraction app from images, hosted in a basic website.
+Text extraction app from images, hosted in a basic website and deployed on heroku.
+
+* [Vehicle detection and count app](https://github.com/brunhs/projects/tree/main/vehicle-detection-app)
+
+Vehicle detection app from images, hosted in a basic website and deployed on heroku.
