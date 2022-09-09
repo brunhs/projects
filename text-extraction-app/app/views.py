@@ -27,6 +27,5 @@ def index():
 		
 		return render_template('index.html', full_filename = image_extract['full_name'], text = image_extract['image_string'])
 
-# Main function
 if __name__ == '__main__':
     app.run(debug=True)
