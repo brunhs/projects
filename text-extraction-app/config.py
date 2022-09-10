@@ -3,12 +3,13 @@ from os import environ
 
 class Config(object):
 
-    DEBUG = False
-    TESTING = False
+    DEBUG = True
+    TESTING = True
+    FLASK_ENV = 'development'
 
     basedir = os.path.abspath(os.path.dirname(__file__))
 
-    SECRET_KEY = 'pianalytix'
+    SECRET_KEY = environ.get('SECRET_KEY')
 
     UPLOADS = "/home/username/app/app/static/uploads"
 
@@ -16,8 +17,12 @@ class Config(object):
     DEFAULT_THEME = None
 
 class DevelopmentConfig(Config):
+    FLASK_ENV = 'development'
     DEBUG = True
+    TESTING = True
     SESSION_COOKIE_SECURE = False
 
-class DebugConfig(Config):
+class ProductionConfig(Config):
+    FLASK_ENV = 'production'
     DEBUG = False
+    TESTING = False
