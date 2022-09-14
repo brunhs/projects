@@ -16,6 +16,8 @@ class Config(object):
     SESSION_COOKIE_SECURE = True
     DEFAULT_THEME = None
 
+    full_filename =  'images/white_bg.jpg'
+
 class DevelopmentConfig(Config):
     FLASK_ENV = 'development'
     DEBUG = True
