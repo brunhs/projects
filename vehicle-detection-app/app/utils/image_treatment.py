@@ -25,14 +25,14 @@ class ImageTreatment():
         return {'full_name':full_filename, 'name':name}
 
 
-    def img_to_array(self, image):
-        image_arr = np.array(image.convert('RGB'))
+    def img_to_array(self):
+        image_arr = np.array(self.image.convert('RGB'))
         
         return image_arr
 
 
-    def img_to_gray(self, image):
-        gray_img_arr = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    def img_to_gray(self):
+        gray_img_arr = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         
         return gray_img_arr
 
@@ -67,13 +67,13 @@ class ImageTreatment():
         
         generated_name = self.name_generator()
 
-        img_array = self.img_to_array(self.image)
+        img_array = self.img_to_array()
 
-        self.image_save(self.img_to_array(self.image), generated_name['name'])
+        self.image_save(img_array, generated_name['name'])
 
         for i in self.steps:
             print(f'Processing {i}')
-            self.image = eval('self.{0}(self.image)'.format(i))
+            self.image = eval('self.{0}()'.format(i))
         
         car_count = self.car_img_count(gray = self.image, img_array = img_array)
         bus_count = self.bus_img_count(gray = self.image, img_array = img_array)

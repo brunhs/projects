@@ -1,5 +1,4 @@
 from marshmallow import Schema, fields
-import json
 
 class AppParameters(Schema):
     car_cascade_src = fields.Str()
