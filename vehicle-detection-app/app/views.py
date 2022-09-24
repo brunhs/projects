@@ -22,7 +22,6 @@ def index():
 	if request.method == "POST":
 
 		image = Image.open(request.files['image_upload']).resize((450,250))
-		print(image)
 		result = ImageTreatment(image=image).fit_transform()
 
 		return render_template('index.html', full_filename = result['full_filename'], pred = result['result'])
