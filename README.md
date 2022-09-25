@@ -14,7 +14,7 @@ A complete solution for a course recommendation algorithm app! A Heroku deployed
 
 * [Simple deployments app](https://github.com/brunhs/projects/tree/main/simple-deployments-gcp-app)
 
-Folder for any other deployments in AWS, GCP or other cloud services, used as form os knowing new technologies.
+Folder for any other deployments in AWS, GCP or other cloud services, used as form of knowing new technologies.
 
 * [Text extraction app](https://github.com/brunhs/projects/tree/main/text-extraction-app)
 
