@@ -1,0 +1,8 @@
+*venv
+*env
+*.pyc
+*.py[cod]
+**/__pycache__/
+*model/data_preparation/__pycache__/
+*.ipynb
+analysys/

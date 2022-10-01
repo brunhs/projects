@@ -9,11 +9,11 @@ from app import app
 
 class ImageExtract():
 
-    def __init__(self, image, steps=['img_to_array', 'img_to_gray', 'img_to_rgb', 'img_text_extract', 'text_symbol_remotion']):
+    def __init__(self, image, steps=['img_to_array', 'img_to_gray', 'img_to_rgb', 'img_text_extract']):
         self.steps = steps
         self.image = image
 
-    def img_to_array(self, image):
+    def img_to_array(self):
         """
         Convert image to and array of numbers.
 
@@ -21,11 +21,11 @@ class ImageExtract():
             numpy.ndarray: Array containing converted image.
         """        
         # Converting image to array
-        image_arr = np.array(image.convert('RGB'))
+        image_arr = np.array(self.image.convert('RGB'))
         
         return image_arr
 
-    def img_to_gray(self, image):
+    def img_to_gray(self):
         """
         Convert image array to gray scale image.
 
@@ -33,11 +33,11 @@ class ImageExtract():
             numpy.ndarray: Array containing converted image.
         """        
         # Converting image to grayscale
-        gray_img_arr = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray_img_arr = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         
         return gray_img_arr
 
-    def img_to_rgb(self, image):
+    def img_to_rgb(self):
         """
         Convert image to rgb.
 
@@ -48,7 +48,7 @@ class ImageExtract():
             numpy.ndarray: array of image.
         """        
         #Converting image back to rbg
-        rgb_image = Image.fromarray(image)
+        rgb_image = Image.fromarray(self.image)
 
         return rgb_image
 
@@ -67,7 +67,7 @@ class ImageExtract():
         
         return {'full_name':full_filename, 'name':name}
 
-    def img_text_extract(self, image):
+    def img_text_extract(self):
         """
         Extract text from image.
 
@@ -79,7 +79,7 @@ class ImageExtract():
         """        
         # Extracting text from image
         custom_config = r'-l eng --oem 3 --psm 6'
-        text = pytesseract.image_to_string(image,config=custom_config)
+        text = pytesseract.image_to_string(self.image,config=custom_config)
 
         return text
 
@@ -129,11 +129,13 @@ class ImageExtract():
         generated_name = self.name_generator()
 
         # saving image
-        self.image_save(self.img_to_array(self.image), generated_name['name'])
+        self.image_save(self.img_to_array(), generated_name['name'])
 
         # image processing steps
         for i in self.steps:
             print(f'Processing {i}')
-            self.image = eval('self.{0}(self.image)'.format(i))
+            self.image = eval('self.{0}()'.format(i))
+
+        image_string = self.text_symbol_remotion(image_text=self.image)
         
-        return {'image_string': self.image, 'full_name':generated_name['full_name']}
+        return {'image_string': image_string, 'full_name':generated_name['full_name']}
